@@ -1,17 +1,22 @@
 #include "Converter.h"
 #include "Length.h"
+#include "TimeConverter.h"
 
 #include "FileHandler.h"
 #include "CsvHandler.h"
+#include "TsvHandler.h"
 
 #include <iostream>
 #include <string>
+#include <vector>  
 
 FileHandler* getFileHanler(std::string filename) {
     if (filename.find(".csv") != std::string::npos) {
         return new CsvHandler();
 
-    } else {
+    } else if (filename.find(".tsv") != std::string::npos) 
+        return new TsvHandler();
+    else {
         std::cerr << "File format is not supported!\n";
         return nullptr;
     }
@@ -46,6 +51,14 @@ int main(){
 
 
     Converter* converter = new Length();
+    Converter* timeConverter = new Time(); 
+
+    Converter* activeConverter = converter;
+    if (unitOrigin == "ns" || unitOrigin == "ms" || unitOrigin == "s" ||
+        unitOrigin == "min" || unitOrigin == "hour") {
+        activeConverter = timeConverter;
+    }
+
     std::vector<std::string> originalCol = fileHandler->getColumn(selector);
     std::vector<std::string> resultCol;
 
@@ -54,8 +67,9 @@ int main(){
         try{
 
             double inputVal = std::stod(raw);
-            double baseVal = converter->toBase(inputVal, unitOrigin);
-            double result = converter->fromBase(baseVal, unitTarget);
+            double baseVal = activeConverter->toBase(inputVal, unitOrigin);
+            double result  = activeConverter->fromBase(baseVal, unitTarget);
+
             resultCol.push_back(std::to_string(result));
         }
         catch (...) {
@@ -77,8 +91,8 @@ int main(){
 
     // Clean up memory
     delete converter;
+    delete timeConverter; 
     delete fileHandler;
-
 
     return 0;
 }

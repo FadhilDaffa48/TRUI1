@@ -1,0 +1,3 @@
+D:/TRUI/TRUI1/build/CMakeFiles/converter.dir
+D:/TRUI/TRUI1/build/CMakeFiles/edit_cache.dir
+D:/TRUI/TRUI1/build/CMakeFiles/rebuild_cache.dir
